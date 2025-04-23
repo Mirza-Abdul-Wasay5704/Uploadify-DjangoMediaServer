@@ -48,3 +48,8 @@ def profile(request):
 
 def printMyName():
     print("Abdul Wasay")
+
+
+
+def printMyNameI():
+    print("irteza")
