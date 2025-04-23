@@ -42,3 +42,9 @@ def logout_view(request):
 @login_required
 def profile(request):
     return render(request, 'users/profile.html')
+
+
+
+
+def printMyName():
+    print("Abdul Wasay")
