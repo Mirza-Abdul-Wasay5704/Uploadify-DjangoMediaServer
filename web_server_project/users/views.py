@@ -44,12 +44,3 @@ def profile(request):
     return render(request, 'users/profile.html')
 
 
-
-
-def printMyName():
-    print("Abdul Wasay")
-
-
-
-def printMyNameI():
-    print("irteza")
