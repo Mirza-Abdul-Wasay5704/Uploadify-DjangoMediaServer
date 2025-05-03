@@ -5,34 +5,126 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h2>Log In</h2>
+        <div class="card border-0 shadow-sm hover-card rounded-3 bg-dark">
+            <div class="card-header text-white text-center">
+                <h2 class="fw-bold mb-0">Log In</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <form method="POST">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                        <label for="{{ form.username.id_for_label }}" class="form-label text-white">Username</label>
                         {{ form.username }}
                         {% if form.username.errors %}
                             <div class="text-danger">{{ form.username.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="mb-3">
-                        <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                        <label for="{{ form.password.id_for_label }}" class="form-label text-white">Password</label>
                         {{ form.password }}
                         {% if form.password.errors %}
                             <div class="text-danger">{{ form.password.errors }}</div>
                         {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="submit" class="btn btn-light w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
                 </form>
             </div>
-            <div class="card-footer text-center">
-                Need an account? <a href="{% url 'users:register' %}">Register</a>
+            <div class="card-footer text-center bg-dark text-white">
+                Need an account? <a href="{% url 'users:register' %}" class="text-info fw-medium">Register</a>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
+<style>
+:root {
+    --primary: #6200EA;
+    --secondary: #F5F7FA;
+    --accent: #FF5722;
+    --text-color: #333333;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+}
+
+body {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    color: var(--text-color);
+    background-color: var(--secondary);
+}
+
+.bg-dark {
+    background-color: #121212 !important;
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #6200EA 0%, #9D50BB 100%);
+}
+
+.bg-light {
+    background-color: var(--secondary);
+}
+
+.btn-light {
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #121212;
+}
+
+.btn-light:hover {
+    background-color: #f1f1f1;
+    border-color: #f1f1f1;
+}
+
+.text-info {
+    color: #17a2b8 !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-white {
+    color: #fff !important;
+}
+
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    background-color: #121212;
+    color: white;
+}
+
+.card-footer {
+    background-color: #121212;
+    color: white;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-footer a {
+    text-decoration: none;
+    color: #17a2b8;
+}
+
+.card-footer a:hover {
+    text-decoration: underline;
+}
+
+.w-100 {
+    width: 100%;
+}
+</style>

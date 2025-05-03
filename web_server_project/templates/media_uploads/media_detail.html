@@ -1,56 +1,342 @@
 {% extends 'base/base.html' %}
 
-{% block title %}{{ media.title }}{% endblock %}
+{% block title %}{{ media.title }} | MediaHub{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h2>{{ media.title }}</h2>
-                <div>
-                    {% if media.user == user %}
-                        <a href="{% url 'media_uploads:delete_media' media.pk %}" class="btn btn-danger">Delete</a>
-                    {% endif %}
-                    <a href="{% url 'media_uploads:dashboard' %}" class="btn btn-secondary">Back</a>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    {% if media.media_type == 'image' %}
-                        <img src="{{ media.file.url }}" class="img-fluid" alt="{{ media.title }}">
-                    {% elif media.media_type == 'video' %}
-                        <video width="100%" controls>
-                            <source src="{{ media.file.url }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    {% elif media.media_type == 'audio' %}
-                        <audio controls class="w-100">
-                            <source src="{{ media.file.url }}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-4">
-                    <h4>Caption</h4>
-                    <p>{{ media.caption|linebreaks }}</p>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Uploaded by:</strong> {{ media.user.username }}</p>
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'media_uploads:home' %}" class="text-decoration-none text-primary">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'media_uploads:dashboard' %}" class="text-decoration-none text-primary">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ media.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <!-- Header Section -->
+        <div class="card-header bg-white py-3 border-bottom">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-container me-3">
+                        <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                            {{ media.user.username|first|upper }}
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Uploaded on:</strong> {{ media.uploaded_at|date:"F d, Y" }}</p>
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">{{ media.title }}</h2>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted small">{{ media.user.username }}</span>
+                            <span class="mx-2 text-muted">•</span>
+                            <span class="text-muted small">{{ media.uploaded_at|date:"F d, Y" }}</span>
+                            <span class="mx-2 text-muted">•</span>
+                            <span class="badge {% if media.is_public %}bg-success{% else %}bg-info{% endif %} rounded-pill px-2 py-1">
+                                <i class="fas {% if media.is_public %}fa-globe-americas{% else %}fa-lock{% endif %} me-1"></i>
+                                {% if media.is_public %}Public{% else %}Private{% endif %}
+                            </span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="mt-2">
-                    <p><strong>Visibility:</strong> {% if media.is_public %}Public{% else %}Private{% endif %}</p>
+                <div class="actions mt-2 mt-md-0">
+                    <div class="btn-group">
+                        {% if media.user == user %}
+                            <a href="{% url 'media_uploads:delete_media' media.pk %}" class="btn btn-outline-danger" 
+                               onclick="return confirm('Are you sure you want to permanently delete this media?');">
+                                <i class="fas fa-trash-alt me-2"></i>Delete
+                            </a>
+                            
+                        {% endif %}
+                        <a href="{% url 'media_uploads:home' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+        
+        <!-- Media Content Section -->
+        <div class="card-body p-0">
+            <div class="media-container text-center p-0 bg-dark">
+                {% if media.media_type == 'image' %}
+                    <div class="image-viewer position-relative">
+                        <img src="{{ media.file.url }}" class="img-fluid d-block mx-auto" alt="{{ media.title }}" style="max-height: 70vh; width: auto;">
+                        <div class="image-controls position-absolute bottom-0 end-0 p-3">
+                            <a href="{{ media.file.url }}" class="btn btn-sm btn-light rounded-circle" download title="Download" target="_blank">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <button class="btn btn-sm btn-light rounded-circle ms-2" title="Fullscreen" id="fullscreen-btn">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% elif media.media_type == 'video' %}
+                    <div class="video-container p-0 bg-dark d-flex justify-content-center align-items-center">
+                        <video id="video-player" class="w-100" controls controlsList="nodownload" style="max-height: 70vh;">
+                            <source src="{{ media.file.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                {% elif media.media_type == 'audio' %}
+                    <div class="audio-container p-5 bg-gradient-audio d-flex flex-column justify-content-center align-items-center" style="min-height: 300px;">
+                        <div class="audio-icon mb-4">
+                            <i class="fas fa-music" style="font-size: 5rem; color: rgba(255,255,255,0.8);"></i>
+                        </div>
+                        <div class="audio-player-container w-100 px-4 py-3 bg-white bg-opacity-10 rounded-3">
+                            <h4 class="text-white mb-3">{{ media.title }}</h4>
+                            <audio id="audio-player" controls class="w-100" style="height: 40px;">
+                                <source src="{{ media.file.url }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="file-container p-5 bg-light d-flex flex-column justify-content-center align-items-center" style="min-height: 300px;">
+                        <div class="file-icon mb-4">
+                            <i class="fas fa-file" style="font-size: 5rem; color: var(--primary);"></i>
+                        </div>
+                        <h4>{{ media.title }}</h4>
+                        <p class="text-muted mb-4">This file cannot be previewed.</p>
+                        <a href="{{ media.file.url }}" class="btn btn-primary px-4 py-2" download>
+                            <i class="fas fa-download me-2"></i>Download File
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Media Info Section -->
+        <div class="card-body pt-4 pb-3 px-4">
+            <div class="media-info mb-4">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <h5 class="mb-0 fw-bold">About this {{ media.get_media_type_display|lower }}</h5>
+                        <span class="badge bg-light text-dark ms-3 rounded-pill">
+                            <i class="fas {% if media.media_type == 'image' %}fa-image{% elif media.media_type == 'video' %}fa-video{% elif media.media_type == 'audio' %}fa-music{% else %}fa-file{% endif %} me-1"></i>
+                            {{ media.get_media_type_display }}
+                        </span>
+                    </div>
+                    <div class="caption-text">
+                        {{ media.caption|linebreaks }}
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3">
+                            <div class="card-body py-3">
+                                <h6 class="mb-1 text-muted"><i class="fas fa-user me-2"></i>Uploaded by</h6>
+                                <p class="mb-0 fw-medium">{{ media.user.username }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3">
+                            <div class="card-body py-3">
+                                <h6 class="mb-1 text-muted"><i class="far fa-calendar-alt me-2"></i>Upload date</h6>
+                                <p class="mb-0 fw-medium">{{ media.uploaded_at|date:"F d, Y - g:i A" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% if media.media_type != 'other' %}
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3">
+                            <div class="card-body py-3">
+                                <h6 class="mb-1 text-muted"><i class="fas fa-link me-2"></i>Direct link</h6>
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-sm bg-white" value="{{ request.scheme }}://{{ request.get_host }}{{ media.file.url }}" id="directLink" readonly>
+                                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="copyToClipboard('directLink')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3">
+                            <div class="card-body py-3">
+                                <h6 class="mb-1 text-muted"><i class="fas fa-share-alt me-2"></i>Share</h6>
+                                <div class="d-flex gap-2 mt-1">
+                                    <a href="#" class="btn btn-sm btn-outline-primary rounded-circle" title="Facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-info rounded-circle" title="Twitter">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-danger rounded-circle" title="Pinterest">
+                                        <i class="fab fa-pinterest-p"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-success rounded-circle" title="WhatsApp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-secondary rounded-circle" title="Copy Link" onclick="copyToClipboard('pageUrl')">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                    <input type="hidden" id="pageUrl" value="{{ request.build_absolute_uri }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Media Section (Only show for public media) -->
+      
+
+<style>
+:root {
+    --primary: #6200EA;
+    --secondary: #F5F7FA;
+    --accent: #FF5722;
+    --text-color: #333333;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+}
+
+body {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    color: var(--text-color);
+    background-color: var(--secondary);
+}
+
+.bg-gradient-audio {
+    background: linear-gradient(135deg, #6200EA 0%, #9D50BB 100%);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: #5000d0;
+    border-color: #5000d0;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.fw-medium {
+    font-weight: 500;
+}
+
+.image-viewer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    min-height: 300px;
+}
+
+#fullscreen-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+#fullscreen-image img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+#fullscreen-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+</style>
+
+<script>
+// Add FontAwesome if not already included in base template
+if (!document.querySelector('link[href*="fontawesome"]')) {
+    const fontAwesome = document.createElement('link');
+    fontAwesome.rel = 'stylesheet';
+    fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+    document.head.appendChild(fontAwesome);
+}
+
+// Add Inter font if not already included
+if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=Inter"]')) {
+    const interFont = document.createElement('link');
+    interFont.rel = 'stylesheet';
+    interFont.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+    document.head.appendChild(interFont);
+}
+
+// Create fullscreen container for image
+if (document.querySelector('.image-viewer')) {
+    const fullscreenContainer = document.createElement('div');
+    fullscreenContainer.id = 'fullscreen-image';
+    fullscreenContainer.innerHTML = `
+        <span id="fullscreen-close">&times;</span>
+        <img src="${document.querySelector('.image-viewer img').src}" alt="Fullscreen view">
+    `;
+    document.body.appendChild(fullscreenContainer);
+    
+    // Fullscreen image functionality
+    document.getElementById('fullscreen-btn')?.addEventListener('click', function() {
+        document.getElementById('fullscreen-image').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    });
+    
+    document.getElementById('fullscreen-close')?.addEventListener('click', function() {
+        document.getElementById('fullscreen-image').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+}
+
+// Copy to clipboard function
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    element.select();
+    element.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    
+    // Create and show toast notification
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.backgroundColor = 'rgba(0,0,0,0.8)';
+    toast.style.color = 'white';
+    toast.style.padding = '10px 20px';
+    toast.style.borderRadius = '5px';
+    toast.style.zIndex = '9999';
+    toast.textContent = 'Copied to clipboard!';
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 500);
+    }, 2000);
+}
+</script>
 {% endblock %}

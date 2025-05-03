@@ -1,69 +1,291 @@
 {% extends 'base/base.html' %}
 
-{% block title %}HTTP Web Server{% endblock %}
+{% block title %}MediaHub - Share Your Content{% endblock %}
 
 {% block content %}
-<div class="jumbotron">
-    <h1 class="display-4">Welcome to the HTTP Web Server</h1>
-    <p class="lead">A simple Django-based HTTP server for media uploads and sharing.</p>
-    <hr class="my-4">
-    <p>Register or log in to start uploading and sharing your media.</p>
-    <div class="mt-3">
-        {% if user.is_authenticated %}
-            <a class="btn btn-primary btn-lg" href="{% url 'media_uploads:dashboard' %}" role="button">Go to Dashboard</a>
-        {% else %}
-            <a class="btn btn-primary btn-lg me-2" href="{% url 'users:register' %}" role="button">Register</a>
-            <a class="btn btn-secondary btn-lg" href="{% url 'users:login' %}" role="button">Login</a>
-        {% endif %}
+<!-- Hero Section -->
+<div class="hero-section py-5 mb-5 bg-gradient position-relative overflow-hidden">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="fw-bold display-4 text-black mb-3">Share Your Media With The World</h1>
+                <p class="lead text-black-50 mb-4">Upload, organize, and share your media content with ease. Keep it private or share it with everyone.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    {% if user.is_authenticated %}
+                        <a class="btn btn-light btn-lg px-4 fw-medium" href="{% url 'media_uploads:dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                        <a class="btn btn-outline-light btn-lg px-4" href="{% url 'media_uploads:upload_media' %}">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>Upload Media
+                        </a>
+                    {% else %}
+                        <a class="btn btn-light btn-lg px-4 fw-medium" href="{% url 'users:register' %}">
+                            <i class="fas fa-user-plus me-2"></i>Sign Up Now
+                        </a>
+                        <a class="btn btn-outline-light btn-lg px-4" href="{% url 'users:login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="media-collage position-relative">
+                    <div class="media-card shadow-lg bg-white p-2 rounded-3 position-absolute" style="top: 0; right: 10%; transform: rotate(5deg);">
+                        <div class="bg-light rounded" style="height: 150px; width: 220px;">
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <i class="fas fa-image text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="media-card shadow-lg bg-white p-2 rounded-3 position-absolute" style="top: 25%; left: 0; transform: rotate(-7deg);">
+                        <div class="bg-light rounded" style="height: 120px; width: 180px;">
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <i class="fas fa-video text-info" style="font-size: 2.5rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="media-card shadow-lg bg-white p-2 rounded-3 position-absolute" style="bottom: 0; right: 20%; transform: rotate(-3deg);">
+                        <div class="bg-light rounded" style="height: 130px; width: 200px;">
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <i class="fas fa-music text-danger" style="font-size: 2.8rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-svg-bottom">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" style="width: 100%; height: 70px; display: block; position: absolute; bottom: 0;">
+            <path fill="#F5F7FA" fill-opacity="1" d="M0,224L80,208C160,192,320,160,480,165.3C640,171,800,213,960,208C1120,203,1280,149,1360,122.7L1440,96L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+        </svg>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold mb-3">Everything You Need for Media Sharing</h2>
+        <p class="text-muted lead">Simple, powerful tools to manage and share your content</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-card rounded-3">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3 mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Easy Upload</h4>
+                    <p class="text-muted">Upload any type of media - images, videos, audio files, and more. Our platform supports all common formats.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-card rounded-3">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-success bg-opacity-10 text-success rounded-circle p-3 mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="fas fa-shield-alt" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Privacy Control</h4>
+                    <p class="text-muted">Choose who can view your content. Keep it private or make it public - you have complete control.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-card rounded-3">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-info bg-opacity-10 text-info rounded-circle p-3 mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="fas fa-th" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Organized Library</h4>
+                    <p class="text-muted">Manage your media with our intuitive dashboard. Filter, sort, and find content quickly and easily.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {% if media_files %}
-    <h2 class="mt-5 mb-4">Recent Public Uploads</h2>
-    <div class="row">
-        {% for media in media_files %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ media.title }}</h5>
-                        <p class="card-text">{{ media.caption|truncatechars:100 }}</p>
-                        <p class="small text-muted">
-                            Uploaded by {{ media.user.username }} on {{ media.uploaded_at|date:"M d, Y" }}
-                        </p>
+<!-- Recent Uploads Section -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Recent Public Uploads</h2>
+            
+        </div>
+        
+        <div class="row g-4">
+            {% for media in media_files %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm hover-lift rounded-3 overflow-hidden h-100">
+                        <div class="card-media position-relative">
+                            {% if media.get_media_type_display == 'Image' %}
+                                <img src="{{ media.file.url }}" class="card-img-top" alt="{{ media.title }}" style="height: 200px; object-fit: cover;">
+                            {% elif media.get_media_type_display == 'Video' %}
+                                <div class="bg-dark d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-play-circle text-white" style="font-size: 3rem;"></i>
+                                </div>
+                            {% elif media.get_media_type_display == 'Audio' %}
+                                <div class="bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-music text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                            {% else %}
+                                <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-file text-secondary" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <span class="position-absolute top-0 start-0 m-3 badge bg-dark text-white rounded-pill px-3 py-2">
+                                <i class="fas {% if media.get_media_type_display == 'Image' %}fa-image{% elif media.get_media_type_display == 'Video' %}fa-video{% elif media.get_media_type_display == 'Audio' %}fa-music{% else %}fa-file{% endif %} me-1"></i>
+                                {{ media.get_media_type_display }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ media.title }}</h5>
+                            <p class="card-text text-muted">{{ media.caption|truncatechars:80 }}</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                    <span>{{ media.user.username|first|upper }}</span>
+                                </div>
+                                <small class="text-muted">{{ media.user.username }}</small>
+                            </div>
+                            <a href="{% url 'media_uploads:media_detail' media.pk %}" class="btn btn-sm btn-primary rounded-pill px-3">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="{% url 'media_uploads:media_detail' media.pk %}" class="btn btn-sm btn-info">View</a>
-                    </div>
                 </div>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Upload Media</h5>
-                    <p class="card-text">Upload and share your images, videos, and audio files.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Organize Content</h5>
-                    <p class="card-text">Keep your media organized and accessible.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Share with Others</h5>
-                    <p class="card-text">Choose to keep your uploads private or share them publicly.</p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
+</div>
 {% endif %}
+
+<!-- Call to Action -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-lg rounded-4 bg-gradient-secondary overflow-hidden">
+                <div class="card-body p-5 text-center">
+                    <h2 class="fw-bold text-white mb-3">Ready to Start Sharing?</h2>
+                    <p class="text-white-50 mb-4">Join thousands of creators who trust our platform for their media sharing needs</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'media_uploads:upload_media' %}" class="btn btn-light btn-lg px-5 fw-medium">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>Upload Your Media
+                        </a>
+                    {% else %}
+                        <a href="{% url 'users:register' %}" class="btn btn-light btn-lg px-5 fw-medium">
+                            <i class="fas fa-user-plus me-2"></i>Create Free Account
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary: #6200EA;
+    --secondary: #F5F7FA;
+    --accent: #FF5722;
+    --text-color: #333333;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+}
+
+body {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    color: var(--text-color);
+    background-color: var(--secondary);
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #6200EA 0%, #9D50BB 100%);
+}
+
+.bg-gradient-secondary {
+    background: linear-gradient(135deg, #FF5722 0%, #FF9800 100%);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: #5000d0;
+    border-color: #5000d0;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+.rounded-4 {
+    border-radius: 1rem !important;
+}
+
+.feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-section {
+    min-height: 600px;
+}
+
+.media-collage {
+    height: 400px;
+}
+
+/* Ensure responsive behavior */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 400px;
+    }
+}
+</style>
+
+<script>
+// Add FontAwesome if not already included in base template
+if (!document.querySelector('link[href*="fontawesome"]')) {
+    const fontAwesome = document.createElement('link');
+    fontAwesome.rel = 'stylesheet';
+    fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+    document.head.appendChild(fontAwesome);
+}
+
+// Add Inter font if not already included
+if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=Inter"]')) {
+    const interFont = document.createElement('link');
+    interFont.rel = 'stylesheet';
+    interFont.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+    document.head.appendChild(interFont);
+}
+</script>
 {% endblock %}

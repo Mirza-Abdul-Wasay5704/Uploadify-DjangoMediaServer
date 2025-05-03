@@ -32,7 +32,7 @@ def upload_media(request):
     
     return render(request, 'media_uploads/upload_media.html', {'form': form})
 
-@login_required
+
 def media_detail(request, pk):
     # Get the media file object
     media = get_object_or_404(MediaFile, pk=pk)
