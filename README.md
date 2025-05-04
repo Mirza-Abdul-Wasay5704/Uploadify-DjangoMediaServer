@@ -61,7 +61,7 @@ web_server_project/
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone <https://github.com/Mirza-Abdul-Wasay5704/CN-Project.git>
    cd CN-Project/web_server_project
    ```
 2. **Create a virtual environment**
